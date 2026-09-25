@@ -1,0 +1,44 @@
+name: Mirror published Maven sources
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: maven-source-mirror
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check mirror validation
+        run: python3 -m unittest discover -s scripts -v
+      - name: Fetch public SDK sources from Maven Central
+        run: python3 scripts/sync_maven.py
+      - name: Commit and tag the published source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(cat VERSION)
+          git add src published-pom.xml VERSION provenance.json README.md
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          if git rev-parse "refs/tags/v${version}" >/dev/null 2>&1; then
+            echo "Refusing to change an already mirrored release: ${version}" >&2
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Mirror Maven Central SDK ${version}"
+          git tag "v${version}"
+          git push --atomic origin HEAD:main "refs/tags/v${version}"

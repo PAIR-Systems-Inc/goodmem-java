@@ -1,0 +1,116 @@
+{
+  "rerank-v4.0-pro": {
+    "provider_type": "COHERE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "rerank-v4.0-fast": {
+    "provider_type": "COHERE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "rerank-v3.5": {
+    "provider_type": "COHERE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "rerank-english-v3.0": {
+    "provider_type": "COHERE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "rerank-multilingual-v3.0": {
+    "provider_type": "COHERE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "jina-reranker-v3": {
+    "provider_type": "JINA",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "jina-reranker-v2-base-multilingual": {
+    "provider_type": "JINA",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "jina-reranker-v1-base-en": {
+    "provider_type": "JINA",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "jina-reranker-v1-turbo-en": {
+    "provider_type": "JINA",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "jina-reranker-v1-tiny-en": {
+    "provider_type": "JINA",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "rerank-2.5": {
+    "provider_type": "VOYAGE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "rerank-2.5-lite": {
+    "provider_type": "VOYAGE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "rerank-2": {
+    "provider_type": "VOYAGE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "rerank-2-lite": {
+    "provider_type": "VOYAGE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "rerank-1": {
+    "provider_type": "VOYAGE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "rerank-lite-1": {
+    "provider_type": "VOYAGE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "qwen3-vl-rerank": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "gte-rerank-v2": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  },
+  "qwen3-rerank": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ]
+  }
+}
