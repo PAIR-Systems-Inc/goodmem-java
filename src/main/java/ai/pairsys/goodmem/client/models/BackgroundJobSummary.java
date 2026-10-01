@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param lockedBy Identifier of the worker currently holding the lease, if any
  * @param lastError Most recent short error message if the job failed
  * @param updatedAt Timestamp when the job row was last updated (milliseconds since epoch)
+ * @param failureStage Stage of the newest attempt's failure for this memory. Omitted for unknown or legacy failures, failures on another memory in the job, and a newer running or successful attempt. Does not imply retry exhaustion. Use jobId as the support reference. Typed enum {@link BackgroundJobAttemptFailureStage}; unknown server values fail Jackson deserialization loudly.
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -32,5 +33,6 @@ public record BackgroundJobSummary(
     Long leaseUntil,
     String lockedBy,
     String lastError,
-    Long updatedAt
+    Long updatedAt,
+    BackgroundJobAttemptFailureStage failureStage
 ) {}

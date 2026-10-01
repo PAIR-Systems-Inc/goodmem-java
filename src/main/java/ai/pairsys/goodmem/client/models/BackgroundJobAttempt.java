@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param progressUpdatedAt Timestamp when progress was last updated (milliseconds since epoch)
  * @param errorMessage Short error message recorded when the attempt failed
  * @param errorStacktrace Stack trace captured when the attempt failed, if available
+ * @param failureStage Stage of this attempt's failure for this memory. Omitted when unknown or when another memory in the same job failed. This is not the current progress stage and does not imply retry exhaustion. Use jobId as the support reference. Typed enum {@link BackgroundJobAttemptFailureStage}; unknown server values fail Jackson deserialization loudly.
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -38,5 +39,6 @@ public record BackgroundJobAttempt(
     String progressUnit,
     Long progressUpdatedAt,
     String errorMessage,
-    String errorStacktrace
+    String errorStacktrace,
+    BackgroundJobAttemptFailureStage failureStage
 ) {}

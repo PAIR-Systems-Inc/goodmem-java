@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param message Primary query/message for semantic search.
  * @param context Optional context items (text or binary) to provide additional context for the search.
  * @param spaceKeys List of spaces to search with optional per-embedder weight overrides.
- * @param requestedSize Maximum number of memories to retrieve.
+ * @param requestedSize Maximum number of memories to retrieve. Zero or omitted uses 20; negative values are invalid.
  * @param outputBudget Optional soft cap for generated retrieve replies. When set to a positive token count, chat post-processing uses this value as the LLM completion-token budget.
  * @param fetchMemory Whether to include streamed memory-definition records in the response. Defaults to true when omitted. These records include memory metadata and audit fields, but omit originalContent unless fetchMemoryContent is true.
  * @param fetchMemoryContent Whether streamed memory-definition records include originalContent bytes. Requires fetchMemory=true. Defaults to false when omitted.
@@ -88,9 +88,13 @@ public record RetrieveMemoryRequest(
             return this;
         }
         /**
-         * Maximum number of memories to retrieve.
+         * Maximum number of memories to retrieve. Zero or omitted uses 20; negative values are invalid.
+         *
+         * Throws {@link IllegalArgumentException} when the value violates the documented range; pass {@code null} to clear.
          */
         public Builder requestedSize(Integer value) {
+            if (value != null && (value < 0)) throw new IllegalArgumentException(
+                "requestedSize must be >= 0, got " + value);
             this.requestedSize = value;
             return this;
         }

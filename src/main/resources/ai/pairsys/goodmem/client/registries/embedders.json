@@ -554,6 +554,25 @@
     ],
     "max_sequence_length": 8192
   },
+  "qwen3.7-text-embedding": {
+    "provider_type": "DASHSCOPE",
+    "dimensions": {
+      "default": 1024,
+      "allowed": [
+        256,
+        512,
+        768,
+        1024,
+        1536,
+        2048,
+        2560
+      ]
+    },
+    "supported_modalities": [
+      "TEXT"
+    ],
+    "max_sequence_length": 131072
+  },
   "tongyi-embedding-vision-plus": {
     "provider_type": "DASHSCOPE",
     "dimensions": {

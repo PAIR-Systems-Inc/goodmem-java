@@ -30,6 +30,11 @@ public final class RerankersAPI extends RerankersAPIBase {
             Object v = reg.get("provider_type");
             if (v != null) providerType = ai.pairsys.goodmem.client.models.ProviderType.valueOf(v.toString());
         }
+        String description = request.description();
+        if (description == null && reg != null) {
+            Object v = reg.get("description");
+            if (v != null) description = v.toString();
+        }
         java.util.List<ai.pairsys.goodmem.client.models.Modality> supportedModalities = request.supportedModalities();
         if (supportedModalities == null && reg != null) {
             Object v = reg.get("supported_modalities");
@@ -42,7 +47,7 @@ public final class RerankersAPI extends RerankersAPIBase {
         Transforms.credentialCheck(providerType == null ? null : providerType.name(), endpointUrl, request.credentials());
         return super.create(new RerankerCreationRequest(
             request.displayName(),
-            request.description(),
+            description,
             providerType,
             endpointUrl,
             request.apiPath(),
@@ -84,6 +89,11 @@ public final class RerankersAPI extends RerankersAPIBase {
             Object v = reg.get("provider_type");
             if (v != null) providerType = ai.pairsys.goodmem.client.models.ProviderType.valueOf(v.toString());
         }
+        String description = request.description();
+        if (description == null && reg != null) {
+            Object v = reg.get("description");
+            if (v != null) description = v.toString();
+        }
         java.util.List<ai.pairsys.goodmem.client.models.Modality> supportedModalities = request.supportedModalities();
         if (supportedModalities == null && reg != null) {
             Object v = reg.get("supported_modalities");
@@ -100,7 +110,7 @@ public final class RerankersAPI extends RerankersAPIBase {
         Transforms.credentialCheck(providerType == null ? null : providerType.name(), endpointUrl, credentials);
         return super.create(new RerankerCreationRequest(
             request.displayName(),
-            request.description(),
+            description,
             providerType,
             endpointUrl,
             request.apiPath(),

@@ -135,20 +135,6 @@
     ],
     "max_context_length": 200000
   },
-  "o1-mini": {
-    "provider_type": "OPENAI",
-    "supported_modalities": [
-      "TEXT"
-    ],
-    "max_context_length": 128000
-  },
-  "o1-preview": {
-    "provider_type": "OPENAI",
-    "supported_modalities": [
-      "TEXT"
-    ],
-    "max_context_length": 128000
-  },
   "qwen-max": {
     "provider_type": "DASHSCOPE",
     "supported_modalities": [
@@ -205,7 +191,21 @@
     ],
     "max_context_length": 1000000
   },
+  "qwen3.7-flash": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ],
+    "max_context_length": 1000000
+  },
   "qwen3.8-max": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ],
+    "max_context_length": 1000000
+  },
+  "qwen3.8-flash": {
     "provider_type": "DASHSCOPE",
     "supported_modalities": [
       "TEXT"
@@ -239,5 +239,103 @@
       "TEXT"
     ],
     "max_context_length": 1000000
+  },
+  "deepseek-v4-flash": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ],
+    "max_context_length": 1000000
+  },
+  "deepseek-v4.1-flash": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ],
+    "max_context_length": 1000000
+  },
+  "glm-5.2": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ],
+    "max_context_length": 1048576
+  },
+  "glm-5.3": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ],
+    "max_context_length": 1048576
+  },
+  "kimi-k2.6": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ],
+    "max_context_length": 262144
+  },
+  "kimi-k3": {
+    "provider_type": "DASHSCOPE",
+    "supported_modalities": [
+      "TEXT"
+    ],
+    "max_context_length": 1048576
+  },
+  "gpt-6-astra": {
+    "provider_type": "OPENAI",
+    "supported_modalities": [
+      "TEXT",
+      "IMAGE"
+    ],
+    "max_context_length": 1050000
+  },
+  "gpt-6-sol": {
+    "provider_type": "OPENAI",
+    "supported_modalities": [
+      "TEXT",
+      "IMAGE"
+    ],
+    "max_context_length": 1050000
+  },
+  "gpt-6-luna": {
+    "provider_type": "OPENAI",
+    "supported_modalities": [
+      "TEXT",
+      "IMAGE"
+    ],
+    "max_context_length": 1050000
+  },
+  "gpt-5.6-sol": {
+    "provider_type": "OPENAI",
+    "supported_modalities": [
+      "TEXT",
+      "IMAGE"
+    ],
+    "max_context_length": 1050000
+  },
+  "gpt-5.6-terra": {
+    "provider_type": "OPENAI",
+    "supported_modalities": [
+      "TEXT",
+      "IMAGE"
+    ],
+    "max_context_length": 1050000
+  },
+  "gpt-5.6-luna": {
+    "provider_type": "OPENAI",
+    "supported_modalities": [
+      "TEXT",
+      "IMAGE"
+    ],
+    "max_context_length": 1050000
+  },
+  "gpt-5.5": {
+    "provider_type": "OPENAI",
+    "supported_modalities": [
+      "TEXT",
+      "IMAGE"
+    ],
+    "max_context_length": 1050000
   }
 }
