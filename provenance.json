@@ -1,8 +1,8 @@
 {
-  "coordinates": "ai.pairsys:goodmem-java:0.2.7",
-  "source_url": "https://repo.maven.apache.org/maven2/ai/pairsys/goodmem-java/0.2.7/goodmem-java-0.2.7-sources.jar",
-  "source_sha256": "09c583d188e6ae27e8a46c7ee572ac6c516e2970857fd0f2e19cfd550f1b1627",
-  "pom_url": "https://repo.maven.apache.org/maven2/ai/pairsys/goodmem-java/0.2.7/goodmem-java-0.2.7.pom",
-  "pom_sha256": "7eba49690bae137c578ee8ab373a6c7075bb074af8045eea69967d4ae2c8bcb5",
+  "coordinates": "ai.pairsys:goodmem-java:0.2.8",
+  "source_url": "https://repo.maven.apache.org/maven2/ai/pairsys/goodmem-java/0.2.8/goodmem-java-0.2.8-sources.jar",
+  "source_sha256": "602ff08ada88c23320b343691d15237fe7ba57a99d60a0705e825940d3c42d08",
+  "pom_url": "https://repo.maven.apache.org/maven2/ai/pairsys/goodmem-java/0.2.8/goodmem-java-0.2.8.pom",
+  "pom_sha256": "580bf4603822a11273945abab4116ba9e90c225bd276f8aee58b1df4985deef8",
   "java_files": 306
 }

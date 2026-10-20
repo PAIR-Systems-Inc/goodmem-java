@@ -167,7 +167,7 @@ public abstract class AsyncMemoriesAPIBase {
     /**
      * Download memory content
      *
-     * <p>Returns the original binary payload for a memory. The response uses the memory's stored content type when available. Returns 404 when the memory does not have inline content; clients can check originalContentRef from the metadata endpoint to locate external content. Requires READ_MEMORY on the requested memory; authority may be granted through DIRECT_MEMBERS_OF its containing space.
+     * <p>Returns the original binary payload for a memory. The response uses the memory's stored content type when available. Returns 404 when the memory does not have inline content; clients can check originalContentRef from the metadata endpoint to locate external content. Requires READ_MEMORY on the requested memory; authority may be granted through DIRECT_MEMBERS_OF its containing space. Supports one byte Range (206); invalid or unsatisfiable ranges return 416. For safe resume, send the original strong ETag in If-Match; a mismatch returns 412. HEAD returns headers without reading source bytes. Full text-like responses may use streaming gzip, which omits Content-Length. Range responses use identity encoding. A failure after delivery starts terminates the transfer.
      *
      * <p>HTTP errors (4xx/5xx) and I/O failures complete the returned future exceptionally with the same exception types as the sync sibling, wrapped by {@link java.util.concurrent.CompletionException} at {@code .get()} / {@code .join()}. See {@link ai.pairsys.goodmem.client.errors.ApiException} and {@link ai.pairsys.goodmem.client.errors.GoodmemException}.
      *
@@ -195,7 +195,7 @@ public abstract class AsyncMemoriesAPIBase {
     /**
      * Download memory content
      *
-     * <p>Returns the original binary payload for a memory. The response uses the memory's stored content type when available. Returns 404 when the memory does not have inline content; clients can check originalContentRef from the metadata endpoint to locate external content. Requires READ_MEMORY on the requested memory; authority may be granted through DIRECT_MEMBERS_OF its containing space.
+     * <p>Returns the original binary payload for a memory. The response uses the memory's stored content type when available. Returns 404 when the memory does not have inline content; clients can check originalContentRef from the metadata endpoint to locate external content. Requires READ_MEMORY on the requested memory; authority may be granted through DIRECT_MEMBERS_OF its containing space. Supports one byte Range (206); invalid or unsatisfiable ranges return 416. For safe resume, send the original strong ETag in If-Match; a mismatch returns 412. HEAD returns headers without reading source bytes. Full text-like responses may use streaming gzip, which omits Content-Length. Range responses use identity encoding. A failure after delivery starts terminates the transfer.
      *
      * <p><strong>UUID-typed overload.</strong> Forwards to the String-typed sibling via {@code toString()} on the promoted argument.
      */
@@ -207,7 +207,7 @@ public abstract class AsyncMemoriesAPIBase {
     /**
      * Download memory content
      *
-     * <p>Returns the original binary payload for a memory. The response uses the memory's stored content type when available. Returns 404 when the memory does not have inline content; clients can check originalContentRef from the metadata endpoint to locate external content. Requires READ_MEMORY on the requested memory; authority may be granted through DIRECT_MEMBERS_OF its containing space.
+     * <p>Returns the original binary payload for a memory. The response uses the memory's stored content type when available. Returns 404 when the memory does not have inline content; clients can check originalContentRef from the metadata endpoint to locate external content. Requires READ_MEMORY on the requested memory; authority may be granted through DIRECT_MEMBERS_OF its containing space. Supports one byte Range (206); invalid or unsatisfiable ranges return 416. For safe resume, send the original strong ETag in If-Match; a mismatch returns 412. HEAD returns headers without reading source bytes. Full text-like responses may use streaming gzip, which omits Content-Length. Range responses use identity encoding. A failure after delivery starts terminates the transfer.
      *
      * <p><strong>Domain-ID typed overload.</strong> Forwards to the String-typed sibling via {@code toString()} on the promoted argument.
      */
