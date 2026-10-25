@@ -3,6 +3,7 @@ package ai.pairsys.goodmem.client;
 import ai.pairsys.goodmem.client.api.AsyncAdminAPI;
 import ai.pairsys.goodmem.client.api.AsyncAccessPolicyAPI;
 import ai.pairsys.goodmem.client.api.AsyncApikeysAPI;
+import ai.pairsys.goodmem.client.api.AsyncDecisionModelsAPI;
 import ai.pairsys.goodmem.client.api.AsyncEmbeddersAPI;
 import ai.pairsys.goodmem.client.api.AsyncInstanceAPI;
 import ai.pairsys.goodmem.client.api.AsyncLlmsAPI;
@@ -74,6 +75,8 @@ public final class AsyncGoodmem implements AutoCloseable {
     public final AsyncAccessPolicyAPI accessPolicy;
     public final AsyncAdminAPI admin;
     public final AsyncApikeysAPI apikeys;
+    /** Decision-model registration and typed evaluation operations. */
+    public final AsyncDecisionModelsAPI decisionModels;
     public final AsyncEmbeddersAPI embedders;
     public final AsyncInstanceAPI instance;
     public final AsyncLlmsAPI llms;
@@ -99,6 +102,7 @@ public final class AsyncGoodmem implements AutoCloseable {
         this.accessPolicy = new AsyncAccessPolicyAPI(executor);
         this.admin = new AsyncAdminAPI(executor);
         this.apikeys = new AsyncApikeysAPI(executor);
+        this.decisionModels = new AsyncDecisionModelsAPI(executor);
         this.embedders = new AsyncEmbeddersAPI(executor);
         this.instance = new AsyncInstanceAPI(executor);
         this.llms = new AsyncLlmsAPI(executor);

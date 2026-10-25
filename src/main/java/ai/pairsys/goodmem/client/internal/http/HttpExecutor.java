@@ -25,6 +25,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.BufferedSink;
 
 public final class HttpExecutor {
     private static final MediaType JSON_MEDIA = MediaType.get("application/json; charset=utf-8");
@@ -85,6 +86,12 @@ public final class HttpExecutor {
         return execute(req, responseType, null);
     }
 
+    /** Sends a non-replayable JSON body for operations with ambiguous or billable outcomes. */
+    public <T> T postOnce(String path, Object body, Class<T> responseType) {
+        Request req = newBuilder(path, null).post(jsonBody(body, true)).build();
+        return execute(req, responseType, null);
+    }
+
     public <T> T put(String path, Object body, Class<T> responseType) {
         Request req = newBuilder(path, null).put(jsonBody(body)).build();
         return execute(req, responseType, null);
@@ -138,9 +145,20 @@ public final class HttpExecutor {
     }
 
     public <T> CompletableFuture<T> postAsync(String path, Object body, Class<T> responseType) {
+        return postAsync(path, body, responseType, false);
+    }
+
+    /** Async counterpart of {@link #postOnce}, preserving asynchronous serialization errors. */
+    public <T> CompletableFuture<T> postOnceAsync(String path, Object body, Class<T> responseType) {
+        return postAsync(path, body, responseType, true);
+    }
+
+    /** Serializes and schedules a POST with its operation's replay policy. */
+    private <T> CompletableFuture<T> postAsync(
+        String path, Object body, Class<T> responseType, boolean singleAttempt) {
         RequestBody rb;
         try {
-            rb = jsonBody(body);
+            rb = jsonBody(body, singleAttempt);
         } catch (GoodmemException e) {
             // Serialization failure is an outbound-request error, not a
             // call-site validation error — async callers expect it to land
@@ -381,9 +399,32 @@ public final class HttpExecutor {
     }
 
     private RequestBody jsonBody(Object body) {
-        return body == null
-            ? RequestBody.create(new byte[0], JSON_MEDIA)
-            : RequestBody.create(toJsonBytes(body), JSON_MEDIA);
+        return jsonBody(body, false);
+    }
+
+    /** Marks billable bodies one-shot so OkHttp cannot replay them after sending. */
+    private RequestBody jsonBody(Object body, boolean singleAttempt) {
+        RequestBody delegate = RequestBody.create(body == null ? new byte[0] : toJsonBytes(body), JSON_MEDIA);
+        if (!singleAttempt) {
+            return delegate;
+        }
+        return new RequestBody() {
+            @Override public MediaType contentType() {
+                return JSON_MEDIA;
+            }
+
+            @Override public long contentLength() throws IOException {
+                return delegate.contentLength();
+            }
+
+            @Override public boolean isOneShot() {
+                return true;
+            }
+
+            @Override public void writeTo(BufferedSink sink) throws IOException {
+                delegate.writeTo(sink);
+            }
+        };
     }
 
     private Request.Builder newBuilder(String path, Map<String, ?> query) {

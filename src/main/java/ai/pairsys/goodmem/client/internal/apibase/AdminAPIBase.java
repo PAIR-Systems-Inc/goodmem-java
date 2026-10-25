@@ -154,9 +154,7 @@ public abstract class AdminAPIBase {
      *   -H "x-api-key: gm_..." \
      *   -H "Content-Type: application/json" \
      *   -d '{
-     *     "request": {
-     *       "reason": "doc example cleanup"
-     *     }
+     *     "reason": "doc example cleanup"
      *   }'
      * }</pre>
      *

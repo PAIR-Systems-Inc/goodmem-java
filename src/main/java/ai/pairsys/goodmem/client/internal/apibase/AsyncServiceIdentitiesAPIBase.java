@@ -158,9 +158,7 @@ public abstract class AsyncServiceIdentitiesAPIBase {
      *   -H "x-api-key: gm_..." \
      *   -H "Content-Type: application/json" \
      *   -d '{
-     *     "request": {
-     *       "newOwnerId": "70e025f6-76ca-4cbe-b8fc-7dab8e84590a"
-     *     }
+     *     "newOwnerId": "70e025f6-76ca-4cbe-b8fc-7dab8e84590a"
      *   }'
      * }</pre>
      *
@@ -200,9 +198,7 @@ public abstract class AsyncServiceIdentitiesAPIBase {
      *   -H "x-api-key: gm_..." \
      *   -H "Content-Type: application/json" \
      *   -d '{
-     *     "request": {
-     *       "description": "Indexes production knowledge sources"
-     *     }
+     *     "description": "Indexes production knowledge sources"
      *   }'
      * }</pre>
      *

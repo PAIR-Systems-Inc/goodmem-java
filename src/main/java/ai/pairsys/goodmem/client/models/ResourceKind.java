@@ -15,6 +15,7 @@ public enum ResourceKind {
     @JsonProperty("EMBEDDER") EMBEDDER("EMBEDDER"),
     @JsonProperty("RERANKER") RERANKER("RERANKER"),
     @JsonProperty("LLM") LLM("LLM"),
+    @JsonProperty("DECISION_MODEL") DECISION_MODEL("DECISION_MODEL"),
     @JsonProperty("MEMORY") MEMORY("MEMORY"),
     @JsonProperty("EXTENSION") EXTENSION("EXTENSION"),
     @JsonProperty("RETRIEVE_MEMORY_LOG_POLICY") RETRIEVE_MEMORY_LOG_POLICY("RETRIEVE_MEMORY_LOG_POLICY");

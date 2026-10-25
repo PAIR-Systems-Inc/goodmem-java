@@ -64,9 +64,7 @@ public abstract class AsyncUsersAPIBase {
      *   -H "x-api-key: gm_..." \
      *   -H "Content-Type: application/json" \
      *   -d '{
-     *     "request": {
-     *       "rotateExisting": true
-     *     }
+     *     "rotateExisting": true
      *   }'
      * }</pre>
      *
@@ -391,9 +389,7 @@ public abstract class AsyncUsersAPIBase {
      *   -H "x-api-key: gm_..." \
      *   -H "Content-Type: application/json" \
      *   -d '{
-     *     "request": {
-     *       "displayName": "Alexandra Example"
-     *     }
+     *     "displayName": "Alexandra Example"
      *   }'
      * }</pre>
      *

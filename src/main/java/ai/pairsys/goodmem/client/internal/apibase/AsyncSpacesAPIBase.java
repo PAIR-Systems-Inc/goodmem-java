@@ -268,9 +268,7 @@ public abstract class AsyncSpacesAPIBase {
      *   -H "x-api-key: gm_..." \
      *   -H "Content-Type: application/json" \
      *   -d '{
-     *     "request": {
-     *       "newOwnerId": "${principal_id}"
-     *     }
+     *     "newOwnerId": "${principal_id}"
      *   }'
      * }</pre>
      *

@@ -19,7 +19,7 @@ public abstract class AsyncPingAPIBase {
     /**
      * Run a single ping probe
      *
-     * <p>Runs a single ping probe and returns the probe result. Requires both the target-specific PING operation and its corresponding EXECUTE operation: PING_EMBEDDER plus EXECUTE_EMBEDDER, PING_RERANKER plus EXECUTE_RERANKER, or PING_LLM plus EXECUTE_LLM.
+     * <p>Runs a single ping probe and returns the probe result. Requires both the target-specific PING operation and its corresponding EXECUTE operation: PING_EMBEDDER plus EXECUTE_EMBEDDER, PING_RERANKER plus EXECUTE_RERANKER, or PING_LLM plus EXECUTE_LLM. Decision models require READ_DECISION_MODEL, PING_DECISION_MODEL, and EXECUTE_DECISION_MODEL. Probes make real provider calls and may incur charges.
      *
      * <p>HTTP errors (4xx/5xx) and I/O failures complete the returned future exceptionally with the same exception types as the sync sibling, wrapped by {@link java.util.concurrent.CompletionException} at {@code .get()} / {@code .join()}. See {@link ai.pairsys.goodmem.client.errors.ApiException} and {@link ai.pairsys.goodmem.client.errors.GoodmemException}.
      *
@@ -54,7 +54,7 @@ public abstract class AsyncPingAPIBase {
     /**
      * Stream ping probe results
      *
-     * <p>Opens a streaming ping session and returns per-probe results plus a terminal summary. Requires both the target-specific PING operation and its corresponding EXECUTE operation: PING_EMBEDDER plus EXECUTE_EMBEDDER, PING_RERANKER plus EXECUTE_RERANKER, or PING_LLM plus EXECUTE_LLM.
+     * <p>Opens a streaming ping session and returns per-probe results plus a terminal summary. Requires both the target-specific PING operation and its corresponding EXECUTE operation: PING_EMBEDDER plus EXECUTE_EMBEDDER, PING_RERANKER plus EXECUTE_RERANKER, or PING_LLM plus EXECUTE_LLM. Decision models require READ_DECISION_MODEL, PING_DECISION_MODEL, and EXECUTE_DECISION_MODEL. Probes make real provider calls and may incur charges.
      *
      * <p>HTTP errors (4xx/5xx) and I/O failures complete the returned future exceptionally with the same exception types as the sync sibling, wrapped by {@link java.util.concurrent.CompletionException} at {@code .get()} / {@code .join()}. See {@link ai.pairsys.goodmem.client.errors.ApiException} and {@link ai.pairsys.goodmem.client.errors.GoodmemException}.
      *

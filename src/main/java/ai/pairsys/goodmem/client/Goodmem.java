@@ -3,6 +3,7 @@ package ai.pairsys.goodmem.client;
 import ai.pairsys.goodmem.client.api.AdminAPI;
 import ai.pairsys.goodmem.client.api.AccessPolicyAPI;
 import ai.pairsys.goodmem.client.api.ApikeysAPI;
+import ai.pairsys.goodmem.client.api.DecisionModelsAPI;
 import ai.pairsys.goodmem.client.api.EmbeddersAPI;
 import ai.pairsys.goodmem.client.api.InstanceAPI;
 import ai.pairsys.goodmem.client.api.LlmsAPI;
@@ -71,6 +72,8 @@ public final class Goodmem implements AutoCloseable {
     public final AccessPolicyAPI accessPolicy;
     public final AdminAPI admin;
     public final ApikeysAPI apikeys;
+    /** Decision-model registration and typed evaluation operations. */
+    public final DecisionModelsAPI decisionModels;
     public final EmbeddersAPI embedders;
     public final InstanceAPI instance;
     public final LlmsAPI llms;
@@ -96,6 +99,7 @@ public final class Goodmem implements AutoCloseable {
         this.accessPolicy = new AccessPolicyAPI(executor);
         this.admin = new AdminAPI(executor);
         this.apikeys = new ApikeysAPI(executor);
+        this.decisionModels = new DecisionModelsAPI(executor);
         this.embedders = new EmbeddersAPI(executor);
         this.instance = new InstanceAPI(executor);
         this.llms = new LlmsAPI(executor);

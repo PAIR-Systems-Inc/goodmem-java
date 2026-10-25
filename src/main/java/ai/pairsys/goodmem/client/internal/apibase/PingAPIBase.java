@@ -19,7 +19,7 @@ public abstract class PingAPIBase {
     /**
      * Run a single ping probe
      *
-     * <p>Runs a single ping probe and returns the probe result. Requires both the target-specific PING operation and its corresponding EXECUTE operation: PING_EMBEDDER plus EXECUTE_EMBEDDER, PING_RERANKER plus EXECUTE_RERANKER, or PING_LLM plus EXECUTE_LLM.
+     * <p>Runs a single ping probe and returns the probe result. Requires both the target-specific PING operation and its corresponding EXECUTE operation: PING_EMBEDDER plus EXECUTE_EMBEDDER, PING_RERANKER plus EXECUTE_RERANKER, or PING_LLM plus EXECUTE_LLM. Decision models require READ_DECISION_MODEL, PING_DECISION_MODEL, and EXECUTE_DECISION_MODEL. Probes make real provider calls and may incur charges.
      *
      * <p><strong>Example</strong></p>
      * <pre>{@code
@@ -53,7 +53,7 @@ public abstract class PingAPIBase {
     /**
      * Stream ping probe results
      *
-     * <p>Opens a streaming ping session and returns per-probe results plus a terminal summary. Requires both the target-specific PING operation and its corresponding EXECUTE operation: PING_EMBEDDER plus EXECUTE_EMBEDDER, PING_RERANKER plus EXECUTE_RERANKER, or PING_LLM plus EXECUTE_LLM.
+     * <p>Opens a streaming ping session and returns per-probe results plus a terminal summary. Requires both the target-specific PING operation and its corresponding EXECUTE operation: PING_EMBEDDER plus EXECUTE_EMBEDDER, PING_RERANKER plus EXECUTE_RERANKER, or PING_LLM plus EXECUTE_LLM. Decision models require READ_DECISION_MODEL, PING_DECISION_MODEL, and EXECUTE_DECISION_MODEL. Probes make real provider calls and may incur charges.
      *
      * <p><strong>Example</strong></p>
      * <pre>{@code

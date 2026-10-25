@@ -13,7 +13,8 @@ public enum PingTargetType {
     @JsonProperty("TARGET_TYPE_UNSPECIFIED") TARGET_TYPE_UNSPECIFIED("TARGET_TYPE_UNSPECIFIED"),
     @JsonProperty("EMBEDDER") EMBEDDER("EMBEDDER"),
     @JsonProperty("RERANKER") RERANKER("RERANKER"),
-    @JsonProperty("LLM") LLM("LLM");
+    @JsonProperty("LLM") LLM("LLM"),
+    @JsonProperty("DECISION_MODEL") DECISION_MODEL("DECISION_MODEL");
 
     private final String wire;
     PingTargetType(String wire) { this.wire = wire; }
