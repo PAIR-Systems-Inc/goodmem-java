@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ai.pairsys</groupId>
   <artifactId>goodmem-java</artifactId>
-  <version>0.2.9</version>
+  <version>0.2.10</version>
   <name>GoodMem Java SDK</name>
   <description>Official Java SDK for the GoodMem API — typed handles, convenience builders, async + sync clients, NDJSON streaming.</description>
   <url>https://goodmem.ai</url>
