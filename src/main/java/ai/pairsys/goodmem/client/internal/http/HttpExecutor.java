@@ -103,7 +103,19 @@ public final class HttpExecutor {
     }
 
     public byte[] getBytes(String path, Map<String, ?> query) {
-        Request req = newBuilder(path, query).get().build();
+        return getBytes(path, query, null);
+    }
+
+    /**
+     * Downloads bytes with headers scoped to this request.
+     *
+     * @param path endpoint path
+     * @param query optional query parameters
+     * @param headers optional HTTP headers overriding client defaults
+     * @return response bytes
+     */
+    public byte[] getBytes(String path, Map<String, ?> query, Map<String, String> headers) {
+        Request req = binaryRequest(path, query, headers);
         try (Response response = http.newCall(req).execute()) {
             int status = response.code();
             ResponseBody body = response.body();
@@ -194,7 +206,21 @@ public final class HttpExecutor {
     }
 
     public CompletableFuture<byte[]> getBytesAsync(String path, Map<String, ?> query) {
-        Request req = newBuilder(path, query).get().build();
+        return getBytesAsync(path, query, null);
+    }
+
+    /**
+     * Downloads bytes asynchronously with headers scoped to this request.
+     *
+     * @param path endpoint path
+     * @param query optional query parameters
+     * @param headers optional HTTP headers overriding client defaults
+     * @return future response bytes
+     */
+    public CompletableFuture<byte[]> getBytesAsync(
+        String path, Map<String, ?> query, Map<String, String> headers
+    ) {
+        Request req = binaryRequest(path, query, headers);
         CompletableFuture<byte[]> fut = new CompletableFuture<>();
         Call call = http.newCall(req);
         call.enqueue(new Callback() {
@@ -425,6 +451,20 @@ public final class HttpExecutor {
                 delegate.writeTo(sink);
             }
         };
+    }
+
+    /**
+     * Builds a binary GET without changing shared client headers.
+     *
+     * @param path endpoint path
+     * @param query optional query parameters
+     * @param headers optional per-request headers
+     * @return the GET request
+     */
+    private Request binaryRequest(String path, Map<String, ?> query, Map<String, String> headers) {
+        Request.Builder builder = newBuilder(path, query);
+        if (headers != null) headers.forEach(builder::header);
+        return builder.get().build();
     }
 
     private Request.Builder newBuilder(String path, Map<String, ?> query) {

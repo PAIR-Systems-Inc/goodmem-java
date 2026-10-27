@@ -197,6 +197,23 @@ public abstract class AsyncMemoriesAPIBase {
      *
      * <p>Returns the original binary payload for a memory. The response uses the memory's stored content type when available. Returns 404 when the memory does not have inline content; clients can check originalContentRef from the metadata endpoint to locate external content. Requires READ_MEMORY on the requested memory; authority may be granted through DIRECT_MEMBERS_OF its containing space. Supports one byte Range (206); invalid or unsatisfiable ranges return 416. For safe resume, send the original strong ETag in If-Match; a mismatch returns 412. HEAD returns headers without reading source bytes. Full text-like responses may use streaming gzip, which omits Content-Length. Range responses use identity encoding. A failure after delivery starts terminates the transfer.
      *
+     * <p>HTTP errors (4xx/5xx) and I/O failures complete the returned future exceptionally with the same exception types as the sync sibling, wrapped by {@link java.util.concurrent.CompletionException} at {@code .get()} / {@code .join()}. See {@link ai.pairsys.goodmem.client.errors.ApiException} and {@link ai.pairsys.goodmem.client.errors.GoodmemException}.
+     *
+     * @param id path segment for {@code id}; must be a non-empty {@code String} (empty values are rejected before the request is sent).
+     * @param headers per-request HTTP headers, such as Range, Accept-Encoding, and If-Match; null sends defaults
+     * @return a {@code CompletableFuture} whose payload is the raw response-body bytes.
+     * @throws IllegalArgumentException synchronously, before the call is scheduled, for {@code null} / empty path parameters.
+     */
+    public java.util.concurrent.CompletableFuture<byte[]> contentWithHeaders(String id, java.util.Map<String, String> headers) {
+        if (id == null || id.isEmpty()) throw new IllegalArgumentException("content: 'id' must be a non-empty string");
+        return http.getBytesAsync("/v1/memories/" + id + "/content", null, headers);
+    }
+
+    /**
+     * Download memory content
+     *
+     * <p>Returns the original binary payload for a memory. The response uses the memory's stored content type when available. Returns 404 when the memory does not have inline content; clients can check originalContentRef from the metadata endpoint to locate external content. Requires READ_MEMORY on the requested memory; authority may be granted through DIRECT_MEMBERS_OF its containing space. Supports one byte Range (206); invalid or unsatisfiable ranges return 416. For safe resume, send the original strong ETag in If-Match; a mismatch returns 412. HEAD returns headers without reading source bytes. Full text-like responses may use streaming gzip, which omits Content-Length. Range responses use identity encoding. A failure after delivery starts terminates the transfer.
+     *
      * <p><strong>UUID-typed overload.</strong> Forwards to the String-typed sibling via {@code toString()} on the promoted argument.
      */
     public java.util.concurrent.CompletableFuture<byte[]> content(java.util.UUID id) {
@@ -646,6 +663,26 @@ public abstract class AsyncMemoriesAPIBase {
         if (id == null || id.isEmpty()) throw new IllegalArgumentException("pagesImage: 'id' must be a non-empty string");
         if (pageIndex == null || pageIndex.isEmpty()) throw new IllegalArgumentException("pagesImage: 'pageIndex' must be a non-empty string");
         return http.getBytesAsync("/v1/memories/" + id + "/pages/" + pageIndex + "/image", query);
+    }
+
+    /**
+     * Download memory page image content
+     *
+     * <p>Downloads inline bytes for one page image. The page index is required. The optional dpi and content type query parameters act as rendition filters; if omitted, the server returns the unique rendition for that page or rejects ambiguous matches. Requires READ_MEMORY on the containing memory; authority may be granted through DIRECT_MEMBERS_OF its containing space.
+     *
+     * <p>HTTP errors (4xx/5xx) and I/O failures complete the returned future exceptionally with the same exception types as the sync sibling, wrapped by {@link java.util.concurrent.CompletionException} at {@code .get()} / {@code .join()}. See {@link ai.pairsys.goodmem.client.errors.ApiException} and {@link ai.pairsys.goodmem.client.errors.GoodmemException}.
+     *
+     * @param id path segment for {@code id}; must be a non-empty {@code String} (empty values are rejected before the request is sent).
+     * @param pageIndex path segment for {@code pageIndex}; must be a non-empty {@code String} (empty values are rejected before the request is sent).
+     * @param query raw query parameters as a {@code Map<String, Object>}; {@code null} or empty sends no filters. Prefer the typed {@code XxxOptions} sibling for compile-time safety; {@code Raw} suffix marks this as the escape hatch.
+     * @param headers per-request HTTP headers, such as Range, Accept-Encoding, and If-Match; null sends defaults
+     * @return a {@code CompletableFuture} whose payload is the raw response-body bytes.
+     * @throws IllegalArgumentException synchronously, before the call is scheduled, for {@code null} / empty path parameters.
+     */
+    public java.util.concurrent.CompletableFuture<byte[]> pagesImageWithHeaders(String id, String pageIndex, java.util.Map<String, Object> query, java.util.Map<String, String> headers) {
+        if (id == null || id.isEmpty()) throw new IllegalArgumentException("pagesImage: 'id' must be a non-empty string");
+        if (pageIndex == null || pageIndex.isEmpty()) throw new IllegalArgumentException("pagesImage: 'pageIndex' must be a non-empty string");
+        return http.getBytesAsync("/v1/memories/" + id + "/pages/" + pageIndex + "/image", query, headers);
     }
 
     /**
