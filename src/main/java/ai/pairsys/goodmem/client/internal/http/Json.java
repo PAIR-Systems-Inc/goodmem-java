@@ -10,7 +10,7 @@ public final class Json {
     public static final ObjectMapper MAPPER = new ObjectMapper()
         .registerModule(new Jdk8Module())
         .registerModule(new JavaTimeModule())
-        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         // Server enum additions are wire-backward-compatible (the server
         // team rightly considers adding a new ``MemoryProcessingStatus``
