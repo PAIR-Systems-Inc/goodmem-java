@@ -19,7 +19,7 @@ Requires Java 21 or later. Use the release shown in [VERSION](VERSION):
 <dependency>
   <groupId>ai.pairsys</groupId>
   <artifactId>goodmem-java</artifactId>
-  <version>0.2.13</version>
+  <version>0.2.14</version>
 </dependency>
 ```
 

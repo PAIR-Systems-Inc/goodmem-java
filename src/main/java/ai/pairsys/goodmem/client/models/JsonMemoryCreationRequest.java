@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param originalContentB64 Original content as base64-encoded binary data (use either this or originalContent)
  * @param originalContentRef Reference to external content location
  * @param contentType MIME type of the content
- * @param metadata Additional metadata for the memory. A top-level textual title is an optional document-title hint for embedding providers that support one; blank or non-string titles are ignored. Later metadata edits do not automatically re-embed existing chunks.
+ * @param metadata Additional metadata for the memory. An embedder's document template can read top-level string, number, and boolean values as <code>memory.metadata.&lt;key&gt;</code>; the template stored by default for Gemini embedders reads title. Blank values and other value types read as empty. Later metadata edits do not automatically re-embed existing chunks.
  * @param chunkingConfig Chunking strategy for this memory (if not provided, uses space default)
  * @param extractPageImages Optional hint to extract page images for eligible document types (for example, PDFs)
  * @param fileField Optional multipart file field name to bind binary content; required when multiple files are uploaded in a batch multipart request.
@@ -134,7 +134,7 @@ public record JsonMemoryCreationRequest(
             return this;
         }
         /**
-         * Additional metadata for the memory. A top-level textual title is an optional document-title hint for embedding providers that support one; blank or non-string titles are ignored. Later metadata edits do not automatically re-embed existing chunks.
+         * Additional metadata for the memory. An embedder's document template can read top-level string, number, and boolean values as <code>memory.metadata.&lt;key&gt;</code>; the template stored by default for Gemini embedders reads title. Blank values and other value types read as empty. Later metadata edits do not automatically re-embed existing chunks.
          *
          * The input map is defensive-copied so chaining a bulk setter with a singular-form sibling (e.g. {@code metadata(Map.of(...)).metadataEntry(...)}) doesn't throw on an immutable input.
          */

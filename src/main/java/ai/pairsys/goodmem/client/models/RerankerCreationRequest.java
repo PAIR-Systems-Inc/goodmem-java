@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param ownerId Optional owner principal UUID. If omitted, defaults to the authenticated principal. CREATE_RERANKER is evaluated against the proposed reranker and owner. Typed wrapper {@link UserId}; build from a raw string with {@link UserId#from(String)}.
  * @param rerankerId Optional client-provided UUID for idempotent creation. If not provided, server generates a new UUID. Returns ALREADY_EXISTS if ID is already in use. Typed wrapper {@link RerankerId}; build from a raw string with {@link RerankerId#from(String)}.
  * @param dashscopeApiDialect DashScope request and response API dialect. Valid only for the DASHSCOPE provider. Omit to infer the dialect from apiPath, the model catalog, or the native reranking default. Allowed values for this field: {@code RERANK_NATIVE_NESTED}, {@code RERANK_COMPATIBLE_FLAT}.
+ * @param inputFormat Instruction and templates applied to query and candidate text before reranking. Accepted for every provider. An instruction that queryTemplate does not read is sent in the provider's instruction field, which the VLLM and DASHSCOPE providers have; for any other provider it is rejected.
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -43,8 +44,51 @@ public record RerankerCreationRequest(
     String monitoringEndpoint,
     UserId ownerId,
     RerankerId rerankerId,
-    DashScopeApiDialect dashscopeApiDialect
+    DashScopeApiDialect dashscopeApiDialect,
+    ModelInputFormat inputFormat
 ) {
+
+    /**
+     * Preserves the constructor descriptor from SDK releases before the input format was
+     * added. Prefer {@link #builder()} for new request code.
+     *
+     * @deprecated Use {@link #builder()} or the full canonical constructor.
+     */
+    @Deprecated(forRemoval = false)
+    public RerankerCreationRequest(
+        String displayName,
+        String description,
+        ProviderType providerType,
+        String endpointUrl,
+        String apiPath,
+        String modelIdentifier,
+        java.util.List<Modality> supportedModalities,
+        EndpointAuthentication credentials,
+        java.util.Map<String, String> labels,
+        String version,
+        String monitoringEndpoint,
+        UserId ownerId,
+        RerankerId rerankerId,
+        DashScopeApiDialect dashscopeApiDialect
+    ) {
+        this(
+            displayName,
+            description,
+            providerType,
+            endpointUrl,
+            apiPath,
+            modelIdentifier,
+            supportedModalities,
+            credentials,
+            labels,
+            version,
+            monitoringEndpoint,
+            ownerId,
+            rerankerId,
+            dashscopeApiDialect,
+            null
+        );
+    }
 
     /**
      * @throws IllegalArgumentException when {@code providerType} is set to a value other than {@code VLLM}, {@code TEI}, {@code LLAMA_CPP}, {@code VOYAGE}, {@code COHERE}, {@code JINA}, {@code DASHSCOPE}.
@@ -88,6 +132,7 @@ public record RerankerCreationRequest(
         private UserId ownerId;
         private RerankerId rerankerId;
         private DashScopeApiDialect dashscopeApiDialect;
+        private ModelInputFormat inputFormat;
 
         /**
          * User-facing name of the reranker
@@ -191,6 +236,13 @@ public record RerankerCreationRequest(
             this.dashscopeApiDialect = value;
             return this;
         }
+        /**
+         * Instruction and templates applied to query and candidate text before reranking. Accepted for every provider. An instruction that queryTemplate does not read is sent in the provider's instruction field, which the VLLM and DASHSCOPE providers have; for any other provider it is rejected.
+         */
+        public Builder inputFormat(ModelInputFormat value) {
+            this.inputFormat = value;
+            return this;
+        }
 
         public Builder label(String key, String value) {
             if (this.labels == null) this.labels = new java.util.LinkedHashMap<>();
@@ -255,7 +307,8 @@ public record RerankerCreationRequest(
                 monitoringEndpoint,
                 ownerId,
                 rerankerId,
-                dashscopeApiDialect
+                dashscopeApiDialect,
+                inputFormat
             );
         }
     }

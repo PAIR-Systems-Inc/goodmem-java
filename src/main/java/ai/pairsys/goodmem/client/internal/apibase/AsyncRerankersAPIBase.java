@@ -23,7 +23,7 @@ public abstract class AsyncRerankersAPIBase {
      *
      * <p>Creates a new reranker configuration for ranking search results. Rerankers represent connections to different reranking API services (like TEI, OpenAI, etc.) and include all the necessary configuration to use them for result ranking.
      *
-     * <p>DUPLICATE DETECTION: Returns HTTP 409 Conflict (ALREADY_EXISTS) if another reranker exists with the same effective provider connection and model configuration for this owner after endpoint canonicalization and provider-default resolution. Equivalent credentials participate in the comparison.
+     * <p>DUPLICATE REGISTRATIONS: Registrations with identical configuration are allowed. Returns HTTP 409 Conflict (ALREADY_EXISTS) only if rerankerId is supplied and that ID is already in use.
      *
      * <p>DEFAULTS: apiPath defaults to '/v2/rerank' for Cohere and '/rerank' for other providers if omitted; supportedModalities defaults to [TEXT] if omitted.
      *
@@ -286,7 +286,7 @@ public abstract class AsyncRerankersAPIBase {
      *
      * <p>IMMUTABLE FIELDS: providerType and ownerId cannot be changed after creation.
      *
-     * <p>SUPPORTED_MODALITIES UPDATE: If the array contains >=1 elements, it replaces the stored set; if empty or omitted, no change occurs and it does not count as an update by itself. Returns ALREADY_EXISTS if update would create an equivalent reranker configuration for this owner after endpoint canonicalization and provider-default resolution (HTTP 409 Conflict / ALREADY_EXISTS). Requires UPDATE_RERANKER on the requested reranker. This operation is idempotent.
+     * <p>SUPPORTED_MODALITIES UPDATE: If the array contains >=1 elements, it replaces the stored set; if empty or omitted, no change occurs and it does not count as an update by itself. Requires UPDATE_RERANKER on the requested reranker. This operation is idempotent.
      *
      * <p>HTTP errors (4xx/5xx) and I/O failures complete the returned future exceptionally with the same exception types as the sync sibling, wrapped by {@link java.util.concurrent.CompletionException} at {@code .get()} / {@code .join()}. See {@link ai.pairsys.goodmem.client.errors.ApiException} and {@link ai.pairsys.goodmem.client.errors.GoodmemException}.
      *
@@ -330,7 +330,7 @@ public abstract class AsyncRerankersAPIBase {
      *
      * <p>IMMUTABLE FIELDS: providerType and ownerId cannot be changed after creation.
      *
-     * <p>SUPPORTED_MODALITIES UPDATE: If the array contains >=1 elements, it replaces the stored set; if empty or omitted, no change occurs and it does not count as an update by itself. Returns ALREADY_EXISTS if update would create an equivalent reranker configuration for this owner after endpoint canonicalization and provider-default resolution (HTTP 409 Conflict / ALREADY_EXISTS). Requires UPDATE_RERANKER on the requested reranker. This operation is idempotent.
+     * <p>SUPPORTED_MODALITIES UPDATE: If the array contains >=1 elements, it replaces the stored set; if empty or omitted, no change occurs and it does not count as an update by itself. Requires UPDATE_RERANKER on the requested reranker. This operation is idempotent.
      *
      * <p><strong>UUID-typed overload.</strong> Forwards to the String-typed sibling via {@code toString()} on each promoted argument.
      */
@@ -346,7 +346,7 @@ public abstract class AsyncRerankersAPIBase {
      *
      * <p>IMMUTABLE FIELDS: providerType and ownerId cannot be changed after creation.
      *
-     * <p>SUPPORTED_MODALITIES UPDATE: If the array contains >=1 elements, it replaces the stored set; if empty or omitted, no change occurs and it does not count as an update by itself. Returns ALREADY_EXISTS if update would create an equivalent reranker configuration for this owner after endpoint canonicalization and provider-default resolution (HTTP 409 Conflict / ALREADY_EXISTS). Requires UPDATE_RERANKER on the requested reranker. This operation is idempotent.
+     * <p>SUPPORTED_MODALITIES UPDATE: If the array contains >=1 elements, it replaces the stored set; if empty or omitted, no change occurs and it does not count as an update by itself. Requires UPDATE_RERANKER on the requested reranker. This operation is idempotent.
      *
      * <p><strong>Domain-ID typed overload.</strong> Forwards to the String-typed sibling via {@code toString()} on each promoted argument.
      */

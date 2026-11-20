@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param updatedById ID of the user who last updated the embedder. Typed wrapper {@link AuditActorId}; build from a raw string with {@link AuditActorId#from(String)}.
  * @param dashscopeApiDialect Configured DashScope request and response API dialect; present only for DashScope configurations with a persisted dialect. Allowed values for this field: {@code EMBEDDING_NATIVE_TEXT}, {@code EMBEDDING_NATIVE_CONTENTS}, {@code OPENAI_COMPATIBLE}.
  * @param geminiEndpointConfig Persisted Gemini backend routing; present only for Gemini embedder resources.
+ * @param inputFormat Instruction and templates applied to query and document text before embedding. Absent when the embedder sends text unchanged.
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -56,7 +57,8 @@ public record EmbedderResponse(
     AuditActorId createdById,
     AuditActorId updatedById,
     DashScopeApiDialect dashscopeApiDialect,
-    GeminiEndpointConfig geminiEndpointConfig
+    GeminiEndpointConfig geminiEndpointConfig,
+    ModelInputFormat inputFormat
 ) {
 
     /**
@@ -111,6 +113,65 @@ public record EmbedderResponse(
             createdById,
             updatedById,
             dashscopeApiDialect,
+            null,
+            null
+        );
+    }
+
+    /**
+     * Preserves the constructor descriptor from SDK releases before the input format was
+     * added. Use the full canonical constructor for explicit construction.
+     *
+     * @deprecated Use the full canonical constructor.
+     */
+    @Deprecated(forRemoval = false)
+    public EmbedderResponse(
+        EmbedderId embedderId,
+        String displayName,
+        String description,
+        ProviderType providerType,
+        String endpointUrl,
+        String apiPath,
+        String modelIdentifier,
+        Integer dimensionality,
+        DistributionType distributionType,
+        Integer maxSequenceLength,
+        java.util.List<Modality> supportedModalities,
+        EndpointAuthentication credentials,
+        java.util.Map<String, String> labels,
+        String version,
+        String monitoringEndpoint,
+        UserId ownerId,
+        Long createdAt,
+        Long updatedAt,
+        AuditActorId createdById,
+        AuditActorId updatedById,
+        DashScopeApiDialect dashscopeApiDialect,
+        GeminiEndpointConfig geminiEndpointConfig
+    ) {
+        this(
+            embedderId,
+            displayName,
+            description,
+            providerType,
+            endpointUrl,
+            apiPath,
+            modelIdentifier,
+            dimensionality,
+            distributionType,
+            maxSequenceLength,
+            supportedModalities,
+            credentials,
+            labels,
+            version,
+            monitoringEndpoint,
+            ownerId,
+            createdAt,
+            updatedAt,
+            createdById,
+            updatedById,
+            dashscopeApiDialect,
+            geminiEndpointConfig,
             null
         );
     }

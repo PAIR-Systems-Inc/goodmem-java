@@ -21,7 +21,7 @@ public abstract class EmbeddersAPIBase {
     /**
      * Create a new embedder
      *
-     * <p>Creates an embedder configuration for use with memory spaces. If ownerId is omitted, the authenticated principal becomes the owner; CREATE_EMBEDDER is evaluated against that proposed embedder and owner. Returns 409 when an equivalent embedder configuration already exists for the owner. See the [embedder provider guide](https://docs.goodmem.ai/docs/how-to/endpoint-registration) for provider-specific configuration.
+     * <p>Creates an embedder configuration for use with memory spaces. If ownerId is omitted, the authenticated principal becomes the owner; CREATE_EMBEDDER is evaluated against that proposed embedder and owner. Registrations with identical configuration are allowed; the request returns 409 only when the supplied embedderId is already in use. See the [embedder provider guide](https://docs.goodmem.ai/docs/how-to/endpoint-registration) for provider-specific configuration.
      *
      * <p><strong>Example</strong></p>
      * <pre>{@code
@@ -276,7 +276,7 @@ public abstract class EmbeddersAPIBase {
     /**
      * Update an embedder
      *
-     * <p>Updates explicitly supplied embedder fields; at least one mutable field is required. Field omission and reset semantics are defined by the request schema, and providerType cannot be changed. Returns 409 if the resulting configuration duplicates another embedder for the owner, and 412 when model-defining fields are changed while the embedder is in use. Requires UPDATE_EMBEDDER on the requested embedder. See the [embedder provider guide](https://docs.goodmem.ai/docs/how-to/endpoint-registration) for provider-specific configuration.
+     * <p>Updates explicitly supplied embedder fields; at least one mutable field is required. Field omission and reset semantics are defined by the request schema, and providerType cannot be changed. Returns 412 when model-defining fields or the documentTemplate of inputFormat are changed while the embedder is in use. Requires UPDATE_EMBEDDER on the requested embedder. See the [embedder provider guide](https://docs.goodmem.ai/docs/how-to/endpoint-registration) for provider-specific configuration.
      *
      * <p><strong>Example</strong></p>
      * <pre>{@code
@@ -316,7 +316,7 @@ public abstract class EmbeddersAPIBase {
     /**
      * Update an embedder
      *
-     * <p>Updates explicitly supplied embedder fields; at least one mutable field is required. Field omission and reset semantics are defined by the request schema, and providerType cannot be changed. Returns 409 if the resulting configuration duplicates another embedder for the owner, and 412 when model-defining fields are changed while the embedder is in use. Requires UPDATE_EMBEDDER on the requested embedder. See the [embedder provider guide](https://docs.goodmem.ai/docs/how-to/endpoint-registration) for provider-specific configuration.
+     * <p>Updates explicitly supplied embedder fields; at least one mutable field is required. Field omission and reset semantics are defined by the request schema, and providerType cannot be changed. Returns 412 when model-defining fields or the documentTemplate of inputFormat are changed while the embedder is in use. Requires UPDATE_EMBEDDER on the requested embedder. See the [embedder provider guide](https://docs.goodmem.ai/docs/how-to/endpoint-registration) for provider-specific configuration.
      *
      * <p><strong>UUID-typed overload.</strong> Forwards to the String-typed sibling via {@code toString()} on each promoted argument.
      */
@@ -328,7 +328,7 @@ public abstract class EmbeddersAPIBase {
     /**
      * Update an embedder
      *
-     * <p>Updates explicitly supplied embedder fields; at least one mutable field is required. Field omission and reset semantics are defined by the request schema, and providerType cannot be changed. Returns 409 if the resulting configuration duplicates another embedder for the owner, and 412 when model-defining fields are changed while the embedder is in use. Requires UPDATE_EMBEDDER on the requested embedder. See the [embedder provider guide](https://docs.goodmem.ai/docs/how-to/endpoint-registration) for provider-specific configuration.
+     * <p>Updates explicitly supplied embedder fields; at least one mutable field is required. Field omission and reset semantics are defined by the request schema, and providerType cannot be changed. Returns 412 when model-defining fields or the documentTemplate of inputFormat are changed while the embedder is in use. Requires UPDATE_EMBEDDER on the requested embedder. See the [embedder provider guide](https://docs.goodmem.ai/docs/how-to/endpoint-registration) for provider-specific configuration.
      *
      * <p><strong>Domain-ID typed overload.</strong> Forwards to the String-typed sibling via {@code toString()} on each promoted argument.
      */

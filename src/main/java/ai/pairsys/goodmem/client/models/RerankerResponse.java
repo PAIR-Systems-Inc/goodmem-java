@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param createdById ID of the user who created the reranker. Typed wrapper {@link AuditActorId}; build from a raw string with {@link AuditActorId#from(String)}.
  * @param updatedById ID of the user who last updated the reranker. Typed wrapper {@link AuditActorId}; build from a raw string with {@link AuditActorId#from(String)}.
  * @param dashscopeApiDialect Configured DashScope request and response API dialect; present only for DashScope configurations with a persisted dialect. Allowed values for this field: {@code RERANK_NATIVE_NESTED}, {@code RERANK_COMPATIBLE_FLAT}.
+ * @param inputFormat Instruction and templates applied to query and candidate text before reranking. Absent when the reranker sends text unchanged.
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -48,5 +49,57 @@ public record RerankerResponse(
     Long updatedAt,
     AuditActorId createdById,
     AuditActorId updatedById,
-    DashScopeApiDialect dashscopeApiDialect
-) {}
+    DashScopeApiDialect dashscopeApiDialect,
+    ModelInputFormat inputFormat
+) {
+
+    /**
+     * Preserves the constructor descriptor from SDK releases before the input format was
+     * added. Use the full canonical constructor for explicit construction.
+     *
+     * @deprecated Use the full canonical constructor.
+     */
+    @Deprecated(forRemoval = false)
+    public RerankerResponse(
+        RerankerId rerankerId,
+        String displayName,
+        String description,
+        ProviderType providerType,
+        String endpointUrl,
+        String apiPath,
+        String modelIdentifier,
+        java.util.List<Modality> supportedModalities,
+        EndpointAuthentication credentials,
+        java.util.Map<String, String> labels,
+        String version,
+        String monitoringEndpoint,
+        UserId ownerId,
+        Long createdAt,
+        Long updatedAt,
+        AuditActorId createdById,
+        AuditActorId updatedById,
+        DashScopeApiDialect dashscopeApiDialect
+    ) {
+        this(
+            rerankerId,
+            displayName,
+            description,
+            providerType,
+            endpointUrl,
+            apiPath,
+            modelIdentifier,
+            supportedModalities,
+            credentials,
+            labels,
+            version,
+            monitoringEndpoint,
+            ownerId,
+            createdAt,
+            updatedAt,
+            createdById,
+            updatedById,
+            dashscopeApiDialect,
+            null
+        );
+    }
+}

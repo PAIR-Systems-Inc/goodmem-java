@@ -799,7 +799,7 @@ public abstract class MemoriesAPIBase {
     /**
      * Advanced semantic memory retrieval with JSON
      *
-     * <p>Streams semantic retrieval results with full feature support including context items and embedder weight overrides, per-space filters, and request-level HNSW tuning. When executable extensions are disabled at startup, custom post-processors return HTTP 412 after request-shape validation and before streaming starts; built-in chat processing remains available.
+     * <p>Streams semantic retrieval results with full feature support including context items and embedder weight overrides, per-space filters, request-level HNSW tuning, and request-time query formats (queryInstruction and embedderQueryFormats). When executable extensions are disabled at startup, custom post-processors return HTTP 412 after request-shape validation and before streaming starts; built-in chat processing remains available.
      *
      * <p>AUTHORIZATION: Every requested space must grant LIST_MEMORY on that exact space and READ_MEMORY through DIRECT_MEMBERS_OF the space before retrieval begins.
      *

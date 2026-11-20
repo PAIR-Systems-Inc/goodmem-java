@@ -71,7 +71,8 @@ public final class AsyncEmbeddersAPI extends AsyncEmbeddersAPIBase {
             request.ownerId(),
             request.embedderId(),
             request.dashscopeApiDialect(),
-            request.geminiEndpointConfig()
+            request.geminiEndpointConfig(),
+            request.inputFormat()
         ));
     }
 
@@ -146,7 +147,8 @@ public final class AsyncEmbeddersAPI extends AsyncEmbeddersAPIBase {
             request.ownerId(),
             request.embedderId(),
             request.dashscopeApiDialect(),
-            request.geminiEndpointConfig()
+            request.geminiEndpointConfig(),
+            request.inputFormat()
         ));
     }
 }

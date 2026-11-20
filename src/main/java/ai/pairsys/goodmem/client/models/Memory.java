@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param processingStatus Processing status of the memory. Typed enum {@link MemoryProcessingStatus}; unknown server values fail Jackson deserialization loudly.
  * @param pageImageStatus Processing status of page-image extraction for this memory. Typed enum {@link MemoryProcessingStatus}; unknown server values fail Jackson deserialization loudly.
  * @param pageImageCount Number of extracted page-image renditions linked to this memory
- * @param metadata Additional metadata for the memory. A top-level textual title may have been used as a document-title hint when its chunks were embedded; changing it does not automatically re-embed existing chunks.
+ * @param metadata Additional metadata for the memory. An embedder's document template can read top-level string, number, and boolean values when it embeds the memory's chunks; changing metadata does not automatically re-embed existing chunks.
  * @param createdAt Timestamp when the memory was created (milliseconds since epoch)
  * @param updatedAt Timestamp when the memory was last updated (milliseconds since epoch)
  * @param createdById Exact principal or API-key audit actor that created this memory. Typed wrapper {@link AuditActorId}; build from a raw string with {@link AuditActorId#from(String)}.

@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param embedderId Optional client-provided UUID for idempotent creation. If not provided, server generates a new UUID. Returns ALREADY_EXISTS if ID is already in use. Typed wrapper {@link EmbedderId}; build from a raw string with {@link EmbedderId#from(String)}.
  * @param dashscopeApiDialect DashScope request and response API dialect. Valid only for the DASHSCOPE provider. Omit to infer the dialect from apiPath, the model catalog, or the native text default. Allowed values for this field: {@code EMBEDDING_NATIVE_TEXT}, {@code EMBEDDING_NATIVE_CONTENTS}, {@code OPENAI_COMPATIBLE}.
  * @param geminiEndpointConfig Gemini backend routing. Valid only for the GEMINI provider. Omit to use the Developer API; when present, backend is required and the gRPC service validates the backend-specific projectId and location contract.
+ * @param inputFormat Instruction and templates applied to query and document text before embedding. A nonempty format is not accepted for VOYAGE, COHERE, JINA, or DASHSCOPE. The restriction includes DashScope's contents dialect, which has no query/document role field. An empty object is accepted for every provider. For GEMINI, omit this property to store the documented Gemini Embedding 2 templates; a supplied value, even an empty object, is stored as given. A nonblank instruction requires a queryTemplate that reads <code>&#123;&#123; instruction &#125;&#125;</code>; otherwise the request is rejected.
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -51,7 +52,8 @@ public record EmbedderCreationRequest(
     UserId ownerId,
     EmbedderId embedderId,
     DashScopeApiDialect dashscopeApiDialect,
-    GeminiEndpointConfig geminiEndpointConfig
+    GeminiEndpointConfig geminiEndpointConfig,
+    ModelInputFormat inputFormat
 ) {
 
     /**
@@ -98,6 +100,57 @@ public record EmbedderCreationRequest(
             ownerId,
             embedderId,
             dashscopeApiDialect,
+            null,
+            null
+        );
+    }
+
+    /**
+     * Preserves the constructor descriptor from SDK releases before the input format was
+     * added. Prefer {@link #builder()} for new request code.
+     *
+     * @deprecated Use {@link #builder()} or the full canonical constructor.
+     */
+    @Deprecated(forRemoval = false)
+    public EmbedderCreationRequest(
+        String displayName,
+        String description,
+        ProviderType providerType,
+        String endpointUrl,
+        String apiPath,
+        String modelIdentifier,
+        Integer dimensionality,
+        DistributionType distributionType,
+        Integer maxSequenceLength,
+        java.util.List<Modality> supportedModalities,
+        EndpointAuthentication credentials,
+        java.util.Map<String, String> labels,
+        String version,
+        String monitoringEndpoint,
+        UserId ownerId,
+        EmbedderId embedderId,
+        DashScopeApiDialect dashscopeApiDialect,
+        GeminiEndpointConfig geminiEndpointConfig
+    ) {
+        this(
+            displayName,
+            description,
+            providerType,
+            endpointUrl,
+            apiPath,
+            modelIdentifier,
+            dimensionality,
+            distributionType,
+            maxSequenceLength,
+            supportedModalities,
+            credentials,
+            labels,
+            version,
+            monitoringEndpoint,
+            ownerId,
+            embedderId,
+            dashscopeApiDialect,
+            geminiEndpointConfig,
             null
         );
     }
@@ -143,6 +196,7 @@ public record EmbedderCreationRequest(
         private EmbedderId embedderId;
         private DashScopeApiDialect dashscopeApiDialect;
         private GeminiEndpointConfig geminiEndpointConfig;
+        private ModelInputFormat inputFormat;
 
         /**
          * User-facing name of the embedder
@@ -282,6 +336,13 @@ public record EmbedderCreationRequest(
             this.geminiEndpointConfig = value;
             return this;
         }
+        /**
+         * Instruction and templates applied to query and document text before embedding. A nonempty format is not accepted for VOYAGE, COHERE, JINA, or DASHSCOPE. The restriction includes DashScope's contents dialect, which has no query/document role field. An empty object is accepted for every provider. For GEMINI, omit this property to store the documented Gemini Embedding 2 templates; a supplied value, even an empty object, is stored as given. A nonblank instruction requires a queryTemplate that reads <code>&#123;&#123; instruction &#125;&#125;</code>; otherwise the request is rejected.
+         */
+        public Builder inputFormat(ModelInputFormat value) {
+            this.inputFormat = value;
+            return this;
+        }
 
         public Builder label(String key, String value) {
             if (this.labels == null) this.labels = new java.util.LinkedHashMap<>();
@@ -350,7 +411,8 @@ public record EmbedderCreationRequest(
                 ownerId,
                 embedderId,
                 dashscopeApiDialect,
-                geminiEndpointConfig
+                geminiEndpointConfig,
+                inputFormat
             );
         }
     }

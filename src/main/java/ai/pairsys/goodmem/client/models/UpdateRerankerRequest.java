@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param version Version information
  * @param monitoringEndpoint Monitoring endpoint URL
  * @param dashscopeApiDialect Update the DashScope request and response API dialect. Valid only for the DASHSCOPE provider. Omit to preserve the stored dialect. Changing apiPath to a recognized canonical DashScope dialect infers its matching dialect; a custom path preserves an existing dialect, while a legacy null dialect is inferred. Allowed values for this field: {@code RERANK_NATIVE_NESTED}, {@code RERANK_COMPATIBLE_FLAT}.
+ * @param inputFormat Replacement instruction and templates. Omit to keep the stored value. A supplied value replaces the whole stored input format, and an empty object clears it.
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -39,8 +40,47 @@ public record UpdateRerankerRequest(
     java.util.Map<String, String> mergeLabels,
     String version,
     String monitoringEndpoint,
-    DashScopeApiDialect dashscopeApiDialect
+    DashScopeApiDialect dashscopeApiDialect,
+    ModelInputFormat inputFormat
 ) {
+
+    /**
+     * Preserves the constructor descriptor from SDK releases before the input format was
+     * added. Prefer {@link #builder()} for new request code.
+     *
+     * @deprecated Use {@link #builder()} or the full canonical constructor.
+     */
+    @Deprecated(forRemoval = false)
+    public UpdateRerankerRequest(
+        String displayName,
+        String description,
+        String endpointUrl,
+        String apiPath,
+        String modelIdentifier,
+        java.util.List<Modality> supportedModalities,
+        EndpointAuthentication credentials,
+        java.util.Map<String, String> replaceLabels,
+        java.util.Map<String, String> mergeLabels,
+        String version,
+        String monitoringEndpoint,
+        DashScopeApiDialect dashscopeApiDialect
+    ) {
+        this(
+            displayName,
+            description,
+            endpointUrl,
+            apiPath,
+            modelIdentifier,
+            supportedModalities,
+            credentials,
+            replaceLabels,
+            mergeLabels,
+            version,
+            monitoringEndpoint,
+            dashscopeApiDialect,
+            null
+        );
+    }
 
     /**
      * @throws IllegalArgumentException when more than one of {@code replaceLabels}, {@code mergeLabels} is set.
@@ -85,6 +125,7 @@ public record UpdateRerankerRequest(
         private String version;
         private String monitoringEndpoint;
         private DashScopeApiDialect dashscopeApiDialect;
+        private ModelInputFormat inputFormat;
 
         /**
          * User-facing name of the reranker
@@ -176,6 +217,13 @@ public record UpdateRerankerRequest(
             this.dashscopeApiDialect = value;
             return this;
         }
+        /**
+         * Replacement instruction and templates. Omit to keep the stored value. A supplied value replaces the whole stored input format, and an empty object clears it.
+         */
+        public Builder inputFormat(ModelInputFormat value) {
+            this.inputFormat = value;
+            return this;
+        }
 
         /** {@link java.net.URI}-typed overload of {@link #endpointUrl(String)}; stores {@code value.toString()}. */
         public Builder endpointUrl(java.net.URI value) {
@@ -208,7 +256,8 @@ public record UpdateRerankerRequest(
                 mergeLabels,
                 version,
                 monitoringEndpoint,
-                dashscopeApiDialect
+                dashscopeApiDialect,
+                inputFormat
             );
         }
     }

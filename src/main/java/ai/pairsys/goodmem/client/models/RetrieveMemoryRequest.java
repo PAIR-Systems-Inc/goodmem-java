@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param hnsw Optional request-level HNSW tuning overrides. Advanced usage; available on POST retrieve.
  * @param postProcessor Optional post-processor configuration to transform retrieval results.
  * @param logging Optional durable request logging block for POST retrieve requests. Set logging.enabled=true to opt in, or supply flat scalar logging.callerAttributes to attach if caller opt-in or an admin policy logs the request.
+ * @param queryInstruction Optional task instruction for this request. It applies to query embedding only. Every embedder whose query template reads <code>&#123;&#123; instruction &#125;&#125;</code> uses it in place of its stored instruction; embedders whose template does not read it ignore it. It never reaches a reranker. A blank value counts as not set.
+ * @param embedderQueryFormats Optional per-embedder overrides of the stored query format for this request, at most one entry per embedder. An entry's instruction, including an empty one that removes it, takes precedence over the request-wide query instruction for that embedder. Every entry is checked before any embedding call.
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -35,8 +37,46 @@ public record RetrieveMemoryRequest(
     Boolean fetchMemoryContent,
     HnswOptions hnsw,
     PostProcessor postProcessor,
-    LoggingOptions logging
+    LoggingOptions logging,
+    String queryInstruction,
+    java.util.List<EmbedderQueryFormat> embedderQueryFormats
 ) {
+
+    /**
+     * Preserves the constructor descriptor from SDK releases before the query instruction and
+     * the per-embedder query formats were added.
+     * Prefer {@link #builder()} for new request code.
+     *
+     * @deprecated Use {@link #builder()} or the full canonical constructor.
+     */
+    @Deprecated(forRemoval = false)
+    public RetrieveMemoryRequest(
+        String message,
+        java.util.List<ContextItem> context,
+        java.util.List<SpaceKey> spaceKeys,
+        Integer requestedSize,
+        TokenBudget outputBudget,
+        Boolean fetchMemory,
+        Boolean fetchMemoryContent,
+        HnswOptions hnsw,
+        PostProcessor postProcessor,
+        LoggingOptions logging
+    ) {
+        this(
+            message,
+            context,
+            spaceKeys,
+            requestedSize,
+            outputBudget,
+            fetchMemory,
+            fetchMemoryContent,
+            hnsw,
+            postProcessor,
+            logging,
+            null,
+            null
+        );
+    }
 
     /**
      * Returns a new builder for {@link RetrieveMemoryRequest}.
@@ -61,6 +101,8 @@ public record RetrieveMemoryRequest(
         private HnswOptions hnsw;
         private PostProcessor postProcessor;
         private LoggingOptions logging;
+        private String queryInstruction;
+        private java.util.List<EmbedderQueryFormat> embedderQueryFormats;
 
         /**
          * Primary query/message for semantic search.
@@ -140,6 +182,22 @@ public record RetrieveMemoryRequest(
             this.logging = value;
             return this;
         }
+        /**
+         * Optional task instruction for this request. It applies to query embedding only. Every embedder whose query template reads <code>&#123;&#123; instruction &#125;&#125;</code> uses it in place of its stored instruction; embedders whose template does not read it ignore it. It never reaches a reranker. A blank value counts as not set.
+         */
+        public Builder queryInstruction(String value) {
+            this.queryInstruction = value;
+            return this;
+        }
+        /**
+         * Optional per-embedder overrides of the stored query format for this request, at most one entry per embedder. An entry's instruction, including an empty one that removes it, takes precedence over the request-wide query instruction for that embedder. Every entry is checked before any embedding call.
+         *
+         * The input collection is defensive-copied — the request record retains a separate mutable instance, so post-build mutation of the caller's collection does not leak into the built request.
+         */
+        public Builder embedderQueryFormats(java.util.List<EmbedderQueryFormat> value) {
+            this.embedderQueryFormats = value == null ? null : new java.util.ArrayList<>(value);
+            return this;
+        }
 
         /** {@link ai.pairsys.goodmem.client.ChatPostProcessorConfig} convenience overload; converts via {@code value.toPostProcessor()}. */
         public Builder postProcessor(ai.pairsys.goodmem.client.ChatPostProcessorConfig value) {
@@ -208,7 +266,9 @@ public record RetrieveMemoryRequest(
                 fetchMemoryContent,
                 hnsw,
                 postProcessor,
-                logging
+                logging,
+                queryInstruction,
+                embedderQueryFormats
             );
         }
     }

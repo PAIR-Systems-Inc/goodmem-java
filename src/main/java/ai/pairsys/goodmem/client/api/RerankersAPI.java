@@ -59,7 +59,8 @@ public final class RerankersAPI extends RerankersAPIBase {
             request.monitoringEndpoint(),
             request.ownerId(),
             request.rerankerId(),
-            request.dashscopeApiDialect()
+            request.dashscopeApiDialect(),
+            request.inputFormat()
         ));
     }
 
@@ -122,7 +123,8 @@ public final class RerankersAPI extends RerankersAPIBase {
             request.monitoringEndpoint(),
             request.ownerId(),
             request.rerankerId(),
-            request.dashscopeApiDialect()
+            request.dashscopeApiDialect(),
+            request.inputFormat()
         ));
     }
 }

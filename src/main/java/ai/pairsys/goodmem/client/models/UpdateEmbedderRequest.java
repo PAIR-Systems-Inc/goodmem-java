@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param monitoringEndpoint Monitoring endpoint URL
  * @param dashscopeApiDialect Update the DashScope request and response API dialect. Valid only for the DASHSCOPE provider. Omit to preserve the stored dialect. Changing apiPath to a recognized canonical DashScope dialect infers its matching dialect; a custom path preserves an existing dialect, while a legacy null dialect is inferred. Allowed values for this field: {@code EMBEDDING_NATIVE_TEXT}, {@code EMBEDDING_NATIVE_CONTENTS}, {@code OPENAI_COMPATIBLE}.
  * @param geminiEndpointConfig When present, atomically replaces the complete Gemini backend routing configuration. Valid only for a GEMINI embedder. Omit to preserve the stored configuration; the gRPC service validates the backend-specific projectId and location contract.
+ * @param inputFormat Replacement instruction and templates. Omit to keep the stored value. A supplied value replaces the whole stored input format, and an empty object clears it. Changing documentTemplate, including clearing it, while a space references the embedder returns 412. A nonblank instruction requires a queryTemplate that reads <code>&#123;&#123; instruction &#125;&#125;</code>; otherwise the request is rejected.
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -45,7 +46,8 @@ public record UpdateEmbedderRequest(
     String version,
     String monitoringEndpoint,
     DashScopeApiDialect dashscopeApiDialect,
-    GeminiEndpointConfig geminiEndpointConfig
+    GeminiEndpointConfig geminiEndpointConfig,
+    ModelInputFormat inputFormat
 ) {
 
     /**
@@ -86,6 +88,51 @@ public record UpdateEmbedderRequest(
             version,
             monitoringEndpoint,
             dashscopeApiDialect,
+            null,
+            null
+        );
+    }
+
+    /**
+     * Preserves the constructor descriptor from SDK releases before the input format was
+     * added. Prefer {@link #builder()} for new request code.
+     *
+     * @deprecated Use {@link #builder()} or the full canonical constructor.
+     */
+    @Deprecated(forRemoval = false)
+    public UpdateEmbedderRequest(
+        String displayName,
+        String description,
+        String endpointUrl,
+        String apiPath,
+        String modelIdentifier,
+        Integer dimensionality,
+        DistributionType distributionType,
+        Integer maxSequenceLength,
+        EndpointAuthentication credentials,
+        java.util.Map<String, String> replaceLabels,
+        java.util.Map<String, String> mergeLabels,
+        String version,
+        String monitoringEndpoint,
+        DashScopeApiDialect dashscopeApiDialect,
+        GeminiEndpointConfig geminiEndpointConfig
+    ) {
+        this(
+            displayName,
+            description,
+            endpointUrl,
+            apiPath,
+            modelIdentifier,
+            dimensionality,
+            distributionType,
+            maxSequenceLength,
+            credentials,
+            replaceLabels,
+            mergeLabels,
+            version,
+            monitoringEndpoint,
+            dashscopeApiDialect,
+            geminiEndpointConfig,
             null
         );
     }
@@ -136,6 +183,7 @@ public record UpdateEmbedderRequest(
         private String monitoringEndpoint;
         private DashScopeApiDialect dashscopeApiDialect;
         private GeminiEndpointConfig geminiEndpointConfig;
+        private ModelInputFormat inputFormat;
 
         /**
          * User-facing name of the embedder
@@ -254,6 +302,13 @@ public record UpdateEmbedderRequest(
             this.geminiEndpointConfig = value;
             return this;
         }
+        /**
+         * Replacement instruction and templates. Omit to keep the stored value. A supplied value replaces the whole stored input format, and an empty object clears it. Changing documentTemplate, including clearing it, while a space references the embedder returns 412. A nonblank instruction requires a queryTemplate that reads <code>&#123;&#123; instruction &#125;&#125;</code>; otherwise the request is rejected.
+         */
+        public Builder inputFormat(ModelInputFormat value) {
+            this.inputFormat = value;
+            return this;
+        }
 
         /** {@link java.net.URI}-typed overload of {@link #endpointUrl(String)}; stores {@code value.toString()}. */
         public Builder endpointUrl(java.net.URI value) {
@@ -289,7 +344,8 @@ public record UpdateEmbedderRequest(
                 version,
                 monitoringEndpoint,
                 dashscopeApiDialect,
-                geminiEndpointConfig
+                geminiEndpointConfig,
+                inputFormat
             );
         }
     }
