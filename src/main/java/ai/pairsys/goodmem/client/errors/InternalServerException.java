@@ -8,7 +8,16 @@ package ai.pairsys.goodmem.client.errors;
  * the server's diagnostic so logs can surface a meaningful cause.
  */
 public class InternalServerException extends ApiException {
-    public InternalServerException(String message, int statusCode, String body) {
+    private final Long retryAfterSeconds;
+
+    /** Parsed Retry-After on HTTP 503, or null. */
+    public Long getRetryAfterSeconds() { return retryAfterSeconds; }
+
+    public InternalServerException(String message, int statusCode, String body, Long retryAfterSeconds) {
         super(message, statusCode, body);
+        this.retryAfterSeconds = retryAfterSeconds;
+    }
+    public InternalServerException(String message, int statusCode, String body) {
+        this(message, statusCode, body, null);
     }
 }

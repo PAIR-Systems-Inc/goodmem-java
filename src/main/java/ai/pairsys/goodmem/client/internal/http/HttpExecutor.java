@@ -31,6 +31,7 @@ public final class HttpExecutor {
     private static final MediaType JSON_MEDIA = MediaType.get("application/json; charset=utf-8");
 
     private final OkHttpClient http;
+    private final WakeRetryInterceptor wakeRetry;
     private final HttpUrl baseUrl;
     private final Map<String, String> defaultHeaders;
     private final int maxStreamLineBytes;
@@ -47,6 +48,9 @@ public final class HttpExecutor {
         Map<String, String> defaultHeaders,
         int maxStreamLineBytes) {
         this.http = http;
+        this.wakeRetry = http.interceptors().stream()
+            .filter(WakeRetryInterceptor.class::isInstance)
+            .map(WakeRetryInterceptor.class::cast).findFirst().orElse(null);
         this.baseUrl = baseUrl;
         this.defaultHeaders = defaultHeaders;
         this.maxStreamLineBytes = maxStreamLineBytes;
@@ -88,7 +92,8 @@ public final class HttpExecutor {
 
     /** Sends a non-replayable JSON body for operations with ambiguous or billable outcomes. */
     public <T> T postOnce(String path, Object body, Class<T> responseType) {
-        Request req = newBuilder(path, null).post(jsonBody(body, true)).build();
+        Request req = newBuilder(path, null).post(jsonBody(body, true))
+            .tag(WakeRetryInterceptor.BufferedBody.class, WakeRetryInterceptor.BufferedBody.REPLAYABLE).build();
         return execute(req, responseType, null);
     }
 
@@ -179,7 +184,9 @@ public final class HttpExecutor {
             // {@code inv-async-error-contract}.
             return CompletableFuture.failedFuture(e);
         }
-        Request req = newBuilder(path, null).post(rb).build();
+        Request.Builder builder = newBuilder(path, null).post(rb);
+        if (singleAttempt) builder.tag(WakeRetryInterceptor.BufferedBody.class, WakeRetryInterceptor.BufferedBody.REPLAYABLE);
+        Request req = builder.build();
         return executeAsync(req, responseType);
     }
 
@@ -222,8 +229,7 @@ public final class HttpExecutor {
     ) {
         Request req = binaryRequest(path, query, headers);
         CompletableFuture<byte[]> fut = new CompletableFuture<>();
-        Call call = http.newCall(req);
-        call.enqueue(new Callback() {
+        enqueue(req, fut, new Callback() {
             @Override public void onFailure(Call c, IOException e) {
                 fut.completeExceptionally(new NetworkException("HTTP request failed", e));
             }
@@ -242,13 +248,12 @@ public final class HttpExecutor {
                 }
             }
         });
-        propagateCancel(fut, call);
         return fut;
     }
 
     public CompletableFuture<Void> deleteAsync(String path) {
         Request req = newBuilder(path, null).delete().build();
-        return executeAsync(req, Void.class).thenApply(v -> null);
+        return executeAsync(req, Void.class);
     }
 
     public <T> CompletableFuture<T> deleteAsync(String path, Object body, Class<T> responseType) {
@@ -283,8 +288,7 @@ public final class HttpExecutor {
         }
         Request req = newBuilder(path, null).post(rb).build();
         CompletableFuture<StreamResponse> fut = new CompletableFuture<>();
-        Call call = http.newCall(req);
-        call.enqueue(new Callback() {
+        enqueue(req, fut, new Callback() {
             @Override public void onFailure(Call c, IOException e) {
                 fut.completeExceptionally(new NetworkException("HTTP request failed", e));
             }
@@ -313,14 +317,12 @@ public final class HttpExecutor {
                 }
             }
         });
-        propagateCancel(fut, call);
         return fut;
     }
 
     private <T> CompletableFuture<T> executeAsync(Request req, Class<T> clazz) {
         CompletableFuture<T> fut = new CompletableFuture<>();
-        Call call = http.newCall(req);
-        call.enqueue(new Callback() {
+        enqueue(req, fut, new Callback() {
             @Override public void onFailure(Call c, IOException e) {
                 fut.completeExceptionally(new NetworkException("HTTP request failed", e));
             }
@@ -357,7 +359,6 @@ public final class HttpExecutor {
                 }
             }
         });
-        propagateCancel(fut, call);
         return fut;
     }
 
@@ -380,6 +381,16 @@ public final class HttpExecutor {
             return mapError(status, bodyString, response);
         } catch (RuntimeException ex) {
             return ex;
+        }
+    }
+
+    private <T> void enqueue(Request request, CompletableFuture<T> future, Callback callback) {
+        if (wakeRetry != null) {
+            new AsyncWakeRetry(http, wakeRetry, request, future, callback).start();
+        } else {
+            Call call = http.newCall(request);
+            propagateCancel(future, call);
+            call.enqueue(callback);
         }
     }
 
@@ -566,62 +577,13 @@ public final class HttpExecutor {
             case 409 -> new ConflictException(msg, status, body);
             case 422 -> new UnprocessableEntityException(msg, status, body);
             default -> status >= 500
-                ? new InternalServerException(msg, status, body)
+                ? new InternalServerException(msg, status, body, status == 503
+                    ? WakeRetryInterceptor.retryAfterSeconds(response.header("Retry-After")) : null)
                 : new ApiException(msg, status, body);
         };
     }
 
-    /**
-     * Parse the {@code Retry-After} response header as integer seconds
-     * (RFC 7231 delta-seconds form). Returns {@code null} when the
-     * header is absent (which is the common case on goodmem 429s that
-     * don't carry a rate-limit verdict). Throws {@link GoodmemException}
-     * loudly when the header is present but not parseable as integer
-     * seconds — see the inline comment for context.
-     */
     private static Long parseRetryAfter(Response response) {
-        if (response == null) return null;
-        String raw = response.header("Retry-After");
-        if (raw == null || raw.isEmpty()) return null;
-        String trimmed = raw.trim();
-        try {
-            return Long.parseLong(trimmed);
-        } catch (NumberFormatException e) {
-            // The goodmem server only sends Retry-After in
-            // delta-seconds form — see
-            // {@code server/.../RateLimitingInterceptor.java:76} (gRPC
-            // trailer is {@code Long.toString(seconds)}) and
-            // {@code server/.../GrpcErrorHandler.java:290} (REST header
-            // copies the trailer verbatim). RFC 7231 also permits an
-            // HTTP-date form, but goodmem never emits it.
-            //
-            // Hitting this branch means EITHER (a) an intermediary
-            // (CDN, reverse proxy, load balancer) rewrote our header
-            // into a form goodmem doesn't produce, OR (b) the server
-            // contract has changed. Silent {@code null} here would mask
-            // either bug for months; throw loudly so we get triggered
-            // to fix.
-            //
-            // To add support for a new format when this fires: insert
-            // a parse arm before the throw. The most likely new
-            // format is HTTP-date (RFC 1123):
-            //   try {
-            //       java.time.ZonedDateTime when =
-            //           java.time.ZonedDateTime.parse(
-            //               trimmed,
-            //               java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME);
-            //       return Math.max(0L, java.time.Duration.between(
-            //           java.time.ZonedDateTime.now(), when).toSeconds());
-            //   } catch (java.time.format.DateTimeParseException dtpe) {
-            //       // fall through to the throw below
-            //   }
-            throw new GoodmemException(
-                "Retry-After header value \"" + trimmed
-                + "\" is not in delta-seconds form. Goodmem server only "
-                + "sends integer seconds; an intermediary may have "
-                + "rewritten the header or the server contract has "
-                + "changed. See parseRetryAfter() in HttpExecutor.java "
-                + "for how to add support for additional formats.");
-        }
+        return response == null ? null : WakeRetryPolicy.retryAfterSeconds(response.header("Retry-After"));
     }
 }

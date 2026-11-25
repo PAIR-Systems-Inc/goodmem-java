@@ -17,6 +17,7 @@ import ai.pairsys.goodmem.client.api.AsyncSystemAPI;
 import ai.pairsys.goodmem.client.api.AsyncUserEnrollmentsAPI;
 import ai.pairsys.goodmem.client.api.AsyncUsersAPI;
 import ai.pairsys.goodmem.client.internal.http.HttpExecutor;
+import ai.pairsys.goodmem.client.internal.http.WakeRetryInterceptor;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -95,10 +96,14 @@ public final class AsyncGoodmem implements AutoCloseable {
         HttpUrl baseUrl,
         Map<String, String> headers,
         boolean ownsHttp,
-        int streamMaxLineBytes) {
+        int streamMaxLineBytes,
+        RetryPolicy retryPolicy) {
         this.http = http;
         this.ownsHttp = ownsHttp;
-        HttpExecutor executor = new HttpExecutor(http, baseUrl, headers, streamMaxLineBytes);
+        HttpExecutor executor = new HttpExecutor(http.newBuilder()
+            .addNetworkInterceptor(WakeRetryInterceptor::preventAutomaticRetry)
+            .addInterceptor(new WakeRetryInterceptor(retryPolicy.wakeTimeout()))
+            .build(), baseUrl, headers, streamMaxLineBytes);
         this.accessPolicy = new AsyncAccessPolicyAPI(executor);
         this.admin = new AsyncAdminAPI(executor);
         this.apikeys = new AsyncApikeysAPI(executor);
@@ -131,6 +136,7 @@ public final class AsyncGoodmem implements AutoCloseable {
         private String baseUrl;
         private String apiKey;
         private Duration timeout = Duration.ofSeconds(30);
+        private RetryPolicy retryPolicy = RetryPolicy.defaults();
         private boolean timeoutExplicitlySet = false;
         private OkHttpClient httpClient;
         private int streamMaxLineBytes = 0; // 0 → EventStream.DEFAULT_STREAM_MAX_LINE_BYTES
@@ -146,6 +152,12 @@ public final class AsyncGoodmem implements AutoCloseable {
             this.timeoutExplicitlySet = true;
             return this;
         }
+        /** Retry policy. Omission enables marked wake retries for 180 seconds. */
+        public Builder retryPolicy(RetryPolicy policy) {
+            this.retryPolicy = java.util.Objects.requireNonNull(policy, "retryPolicy");
+            return this;
+        }
+
         public Builder httpClient(OkHttpClient httpClient) { this.httpClient = httpClient; return this; }
         /** Per-event NDJSON line cap for the streaming endpoints; see
          *  {@link Goodmem.Builder#streamMaxLineBytes(int)}. Defaults to
@@ -174,7 +186,7 @@ public final class AsyncGoodmem implements AutoCloseable {
                 if (apiKey != null) {
                     headers.put("x-api-key", apiKey);
                 }
-                return new AsyncGoodmem(httpClient, parseBaseUrl(baseUrl), headers, false, streamMaxLineBytes);
+                return new AsyncGoodmem(httpClient, parseBaseUrl(baseUrl), headers, false, streamMaxLineBytes, retryPolicy);
             }
 
             Objects.requireNonNull(baseUrl, "baseUrl is required");
@@ -203,7 +215,7 @@ public final class AsyncGoodmem implements AutoCloseable {
             if (apiKey != null) {
                 headers.put("x-api-key", apiKey);
             }
-            return new AsyncGoodmem(built, parseBaseUrl(baseUrl), headers, true, streamMaxLineBytes);
+            return new AsyncGoodmem(built, parseBaseUrl(baseUrl), headers, true, streamMaxLineBytes, retryPolicy);
         }
 
         private static HttpUrl parseBaseUrl(String baseUrl) {

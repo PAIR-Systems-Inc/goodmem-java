@@ -17,6 +17,7 @@ import ai.pairsys.goodmem.client.api.SystemAPI;
 import ai.pairsys.goodmem.client.api.UserEnrollmentsAPI;
 import ai.pairsys.goodmem.client.api.UsersAPI;
 import ai.pairsys.goodmem.client.internal.http.HttpExecutor;
+import ai.pairsys.goodmem.client.internal.http.WakeRetryInterceptor;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -92,10 +93,14 @@ public final class Goodmem implements AutoCloseable {
         HttpUrl baseUrl,
         Map<String, String> headers,
         boolean ownsHttp,
-        int streamMaxLineBytes) {
+        int streamMaxLineBytes,
+        RetryPolicy retryPolicy) {
         this.http = http;
         this.ownsHttp = ownsHttp;
-        HttpExecutor executor = new HttpExecutor(http, baseUrl, headers, streamMaxLineBytes);
+        HttpExecutor executor = new HttpExecutor(http.newBuilder()
+            .addNetworkInterceptor(WakeRetryInterceptor::preventAutomaticRetry)
+            .addInterceptor(new WakeRetryInterceptor(retryPolicy.wakeTimeout()))
+            .build(), baseUrl, headers, streamMaxLineBytes);
         this.accessPolicy = new AccessPolicyAPI(executor);
         this.admin = new AdminAPI(executor);
         this.apikeys = new ApikeysAPI(executor);
@@ -130,6 +135,7 @@ public final class Goodmem implements AutoCloseable {
         private String baseUrl;
         private String apiKey;
         private Duration timeout = Duration.ofSeconds(30);
+        private RetryPolicy retryPolicy = RetryPolicy.defaults();
         private boolean timeoutExplicitlySet = false;
         private OkHttpClient httpClient;
         private int streamMaxLineBytes = 0; // 0 → EventStream.DEFAULT_STREAM_MAX_LINE_BYTES
@@ -152,6 +158,12 @@ public final class Goodmem implements AutoCloseable {
         public Builder timeout(Duration timeout) {
             this.timeout = timeout;
             this.timeoutExplicitlySet = true;
+            return this;
+        }
+
+        /** Retry policy. Omission enables marked wake retries for 180 seconds. */
+        public Builder retryPolicy(RetryPolicy policy) {
+            this.retryPolicy = java.util.Objects.requireNonNull(policy, "retryPolicy");
             return this;
         }
 
@@ -195,7 +207,7 @@ public final class Goodmem implements AutoCloseable {
                 if (apiKey != null) {
                     headers.put("x-api-key", apiKey);
                 }
-                return new Goodmem(httpClient, parseBaseUrl(baseUrl), headers, false, streamMaxLineBytes);
+                return new Goodmem(httpClient, parseBaseUrl(baseUrl), headers, false, streamMaxLineBytes, retryPolicy);
             }
 
             Objects.requireNonNull(baseUrl, "baseUrl is required");
@@ -242,7 +254,7 @@ public final class Goodmem implements AutoCloseable {
             if (apiKey != null) {
                 headers.put("x-api-key", apiKey);
             }
-            return new Goodmem(built, parseBaseUrl(baseUrl), headers, true, streamMaxLineBytes);
+            return new Goodmem(built, parseBaseUrl(baseUrl), headers, true, streamMaxLineBytes, retryPolicy);
         }
 
         private static HttpUrl parseBaseUrl(String baseUrl) {
